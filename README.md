@@ -1,8 +1,9 @@
 # vue-resize
 
 ## 使用方法
-
-### \<Resize/\>xxx\</Resize\>
+### 导入组件： import Resize from './components/Resize'
+### 注册组件：components: {[Resize.name]: Resize}
+### 使用组件：\<Resize/\>xxx\</Resize\>
 
 ## Attributes
 ### | 参数 | 说明 | 类型 | 默认值 |
