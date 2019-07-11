@@ -2,7 +2,7 @@
 
 ## 使用方法
 
-### <Resize>xxx</Resize>
+### \<Resize/\>xxx\</Resize\>
 
 ## Attributes
 ### | 参数 | 说明 | 类型 | 默认值 |
