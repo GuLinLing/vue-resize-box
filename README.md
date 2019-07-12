@@ -1,15 +1,15 @@
-# vue-resize
+# vue-resize-box
 
 ## 使用方法1
-### 导入组件： import Resize from './components/Resize'
-### 注册组件：components: {[Resize.name]: Resize}
-### 使用组件：\<Resize/\>xxx\</Resize\>
+### 导入组件： import ResizeBox from 'vue-resize-box/src/main.vue'
+### 注册组件：components: {[ResizeBox.name]: ResizeBox}
+### 使用组件：\<ResizeBox/\>xxx\</ResizeBox\>
 
 ## 使用方法2
-### npm install vue-resize
-### 导入组件：import Resize from 'vue-resize'
-### 注册组件：Vue.use(Resize)
-### 使用组件：\<Resize/\>xxx\</Resize\>
+### npm install vue-resize-box
+### 导入组件：import ResizeBox from 'vue-resize-box'
+### 注册组件：Vue.use(ResizeBox)
+### 使用组件：\<ResizeBox/\>xxx\</ResizeBox\>
 
 ## Attributes
 ### | 参数 | 说明 | 类型 | 默认值 |
