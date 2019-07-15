@@ -1,5 +1,5 @@
 <style scoped>
-  .resize {
+  .resize-box {
     position: relative;
     display: table;
     border: 1px solid #ccc;
@@ -72,10 +72,7 @@
 </style>
 
 <template>
-  <div
-    :class="['resize', {disabled: disabled}]"
-    :style="option"
-  >
+  <div :class="['resize-box', {disabled: disabled}]">
     <div
       v-if="move.t"
       class="line line-t"
@@ -130,19 +127,23 @@
 
 <script>
   export default {
-    name: 'Resize',
+    name: 'ResizeBox',
     props: {
       max: {
         type: Object,
-        default: () => {
+        default: function () {
           return {
             width: 0,
             height: 0
           }
         },
-        validator: (val) => {
-          if (typeof val.width === 'number' || typeof val.height === 'number') {
-            return true
+        validator: function (obj) {
+          if (typeof obj.width === 'number' || typeof obj.height === 'number') {
+            if (obj.width >= 0 && obj.height >= 0) {
+              return true
+            } else {
+              return false
+            }
           } else {
             return false
           }
@@ -156,9 +157,13 @@
             height: 0
           }
         },
-        validator: (val) => {
-          if (typeof val.width === 'number' || typeof val.height === 'number') {
-            return true
+        validator: function (obj) {
+          if (typeof obj.width === 'number' || typeof obj.height === 'number') {
+            if (obj.width >= 0 && obj.height >= 0) {
+              return true
+            } else {
+              return false
+            }
           } else {
             return false
           }
@@ -178,16 +183,16 @@
             br: true
           }
         },
-        validator: (val) => {
+        validator: function (obj) {
           if (
-            typeof val.t === 'boolean'
-            || typeof val.l === 'boolean'
-            || typeof val.r === 'boolean'
-            || typeof val.b === 'boolean'
-            || typeof val.tl === 'boolean'
-            || typeof val.tr === 'boolean'
-            || typeof val.bl === 'boolean'
-            || typeof val.br === 'boolean'
+            typeof obj.t === 'boolean'
+            || typeof obj.l === 'boolean'
+            || typeof obj.r === 'boolean'
+            || typeof obj.b === 'boolean'
+            || typeof obj.tl === 'boolean'
+            || typeof obj.tr === 'boolean'
+            || typeof obj.bl === 'boolean'
+            || typeof obj.br === 'boolean'
           ) {
             return true
           } else {
@@ -195,17 +200,16 @@
           }
         }
       },
+      speed: {
+        type: Number,
+        default: 2,
+        validator: function (num) {
+          return num >= 1
+        }
+      },
       disabled: {
         type: Boolean,
         default: false
-      }
-    },
-    data () {
-      return {
-        option: {
-          width: this.min.width ? `${this.min.width}px` : 'auto',
-          height: this.min.height ? `${this.min.height}px` : 'auto'
-        }
       }
     },
     created () {
@@ -223,12 +227,15 @@
         }
       },
       mousedownHanlder (event) {
+        let { cursor } = this.getStyle(event.target)
         this.dataType = event.target.getAttribute('data-type')
         this.event = event
         document.body.addEventListener('mousemove', this.mousemoveHandler)
+        document.body.style.cursor = cursor
       },
       mouseupHanlder () {
         document.body.removeEventListener('mousemove', this.mousemoveHandler)
+        document.body.style.cursor = 'default'
       },
       mousemoveHandler (event) {
         if (this.disabled) {
@@ -237,68 +244,68 @@
         let { width, height } = this.getStyle(this.$el)
         width = parseInt(width)
         height = parseInt(height)
-        this[this.dataType]({event, width, height})
+        this[this.dataType]({ event, width, height })
         this.event = event
       },
-      t ({event, height}) {
+      t ({ event, height }) {
         if (event.y > this.event.y) {
-          this.option.height = this.min.height
-            ? `${Math.max(this.min.height, height - (event.y - this.event.y))}px`
-            : `${height - (event.y - this.event.y)}px`
+          this.$el.style.height = this.min.height
+            ? `${ Math.max(this.min.height, height - (event.y - this.event.y) * this.speed) }px`
+            : `${ height - (event.y - this.event.y) * this.speed }px`
         } else {
-          this.option.height = this.max.height
-            ? `${Math.min(this.max.height, height + (this.event.y - event.y))}px`
-            : `${height + (this.event.y - event.y)}px`
+          this.$el.style.height = this.max.height
+            ? `${ Math.min(this.max.height, height + (this.event.y - event.y) * this.speed) }px`
+            : `${ height + (this.event.y - event.y) * this.speed }px`
         }
       },
-      l ({event, width}) {
+      l ({ event, width }) {
         if (event.x > this.event.x) {
-          this.option.width = this.min.width
-            ? `${Math.max(this.min.width, width - (event.x - this.event.x))}px`
-            : `${width - (event.x - this.event.x)}px`
+          this.$el.style.width = this.min.width
+            ? `${ Math.max(this.min.width, width - (event.x - this.event.x) * this.speed)}px`
+            : `${ width - (event.x - this.event.x) * this.speed }px`
         } else {
-          this.option.width = this.max.width
-            ? `${Math.min(this.max.width, width + (this.event.x - event.x))}px`
-            : `${width + (this.event.x - event.x)}px`
+          this.$el.style.width = this.max.width
+            ? `${ Math.min(this.max.width, width + (this.event.x - event.x) * this.speed) }px`
+            : `${ width + (this.event.x - event.x) * this.speed }px`
         }
       },
-      r ({event, width}) {
+      r ({ event, width }) {
         if (event.x > this.event.x) {
-          this.option.width = this.max.width
-            ? `${Math.min(this.max.width, width + (event.x - this.event.x))}px`
-            : `${width + (event.x - this.event.x)}px`
+          this.$el.style.width = this.max.width
+            ? `${ Math.min(this.max.width, width + (event.x - this.event.x) * this.speed) }px`
+            : `${ width + (event.x - this.event.x) * this.speed }px`
         } else {
-          this.option.width = this.min.width
-            ? `${Math.max(this.min.width, width - (this.event.x - event.x))}px`
-            : `${width - (this.event.x - event.x)}px`
+          this.$el.style.width = this.min.width
+            ? `${ Math.max(this.min.width, width - (this.event.x - event.x) * this.speed) }px`
+            : `${ width - (this.event.x - event.x) * this.speed }px`
         }
       },
-      b ({event, height}) {
+      b ({ event, height }) {
         if (event.y > this.event.y) {
-          this.option.height = this.max.height
-            ? `${Math.min(this.max.height, height + (event.y - this.event.y))}px`
-            : `${height + (event.y - this.event.y)}px`
+          this.$el.style.height = this.max.height
+            ? `${ Math.min(this.max.height, height + (event.y - this.event.y) * this.speed) }px`
+            : `${ height + (event.y - this.event.y) * this.speed }px`
         } else {
-          this.option.height = this.min.height
-            ? `${Math.max(this.min.height, height - (this.event.y - event.y))}px`
-            : `${height - (this.event.y - event.y)}px`
+          this.$el.style.height = this.min.height
+            ? `${ Math.max(this.min.height, height - (this.event.y - event.y) * this.speed) }px`
+            : `${ height - (this.event.y - event.y) * this.speed }px`
         }
       },
-      tl ({event, width, height}) {
-        this.t({event, height})
-        this.l({event, width})
+      tl ({ event, width, height }) {
+        this.t({ event, height })
+        this.l({ event, width})
       },
-      tr ({event, width, height}) {
-        this.t({event, height})
-        this.r({event, width})
+      tr ({ event, width, height }) {
+        this.t({ event, height })
+        this.r({ event, width })
       },
-      bl ({event, width, height}) {
-        this.b({event, height})
-        this.l({event, width})
+      bl ({ event, width, height }) {
+        this.b({ event, height })
+        this.l({ event, width })
       },
-      br ({event, width, height}) {
-        this.b({event, height})
-        this.r({event, width})
+      br ({ event, width, height }) {
+        this.b({ event, height })
+        this.r({ event, width })
       }
     }
   }
